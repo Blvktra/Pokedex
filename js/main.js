@@ -12,8 +12,6 @@ const limit = 50;
 const totalPokemon = 1025;
 
 function cargarPokemones(offset = 0) {
-  listaPokemon.innerHTML = "";
-
   fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`)
     .then((res) => res.json())
     .then((data) => {
