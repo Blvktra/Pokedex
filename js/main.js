@@ -13,17 +13,27 @@ const totalPokemon = 1025;
 
 function cargarPokemones(offset = 0) {
   listaPokemon.innerHTML = "";
+
   fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`)
     .then((res) => res.json())
     .then((data) => {
       const pokemones = data.results;
-      pokemones.forEach((pokemon) => {
-        fetch(pokemon.url)
-          .then((res) => res.json())
-          .then((data) => {
-            mostrarPokemon(data);
-            if (!todosCargados) todosLosPokemones.push(data);
-          });
+
+      // Mapea los fetches individuales
+      const fetches = pokemones.map((pokemon) =>
+        fetch(pokemon.url).then((res) => res.json())
+      );
+
+      // Espera a que todos se completen
+      Promise.all(fetches).then((resultados) => {
+        // Ordenar por número (ID)
+        resultados.sort((a, b) => a.id - b.id);
+
+        // Mostrar todos ya ordenados
+        resultados.forEach((data) => {
+          mostrarPokemon(data);
+          if (!todosCargados) todosLosPokemones.push(data);
+        });
       });
     });
 }
